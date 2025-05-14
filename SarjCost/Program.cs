@@ -1,5 +1,6 @@
-using SarjCost.Client.Pages;
+using Microsoft.EntityFrameworkCore;
 using SarjCost.Components;
+using SarjCost.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,28 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"),
+    o => o.CommandTimeout(60)));
+
+//builder.Services.AddScoped<AuthenticationStateProvider, RemoteAuthenticationService<RemoteUserAccount>>();
+//builder.Services.AddScoped<IAccessTokenProvider, AuthorizationMessageHandler>();
+builder.Services.AddAuthorizationCore();
+
+builder.Services.AddOidcAuthentication(options =>
+{
+    options.ProviderOptions.Authority = "https://accounts.google.com";
+    options.ProviderOptions.ClientId = "YOUR_GOOGLE_CLIENT_ID";
+    options.ProviderOptions.ResponseType = "id_token";
+    options.ProviderOptions.DefaultScopes.Add("openid");
+    options.ProviderOptions.DefaultScopes.Add("profile");
+    options.ProviderOptions.DefaultScopes.Add("email");
+    options.ProviderOptions.RedirectUri = "https://localhost:5001/authentication/login-callback";
+});
+
+
+
 
 var app = builder.Build();
 

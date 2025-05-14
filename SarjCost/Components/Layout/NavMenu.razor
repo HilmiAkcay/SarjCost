@@ -1,8 +1,27 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿
+@* <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">SarjCost</a>
     </div>
+</div> *@
+
+
+<div class="top-row px-4 d-flex justify-content-between align-items-center">
+    <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+
+    <AuthorizeView>
+        <Authorized>
+            <div>
+                Hello, @context.User.Identity.Name!
+                <button class="btn btn-sm btn-outline-danger ms-2" @onclick="BeginLogout">Logout</button>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <button class="btn btn-sm btn-outline-primary" @onclick="BeginLogin">Login with Google</button>
+        </NotAuthorized>
+    </AuthorizeView>
 </div>
+
 
 <input type="checkbox" title="Navigation menu" class="navbar-toggler" />
 
@@ -27,4 +46,13 @@
         </div>
     </nav>
 </div>
+
+
+@code {
+    [Inject] NavigationManager Navigation { get; set; }
+
+    void BeginLogin() => Navigation.NavigateTo("authentication/login");
+    void BeginLogout() => Navigation.NavigateTo("authentication/logout");
+}
+
 
